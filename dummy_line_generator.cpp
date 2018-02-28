@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include <iostream>
 #include <cmath>
 
@@ -13,15 +12,21 @@ using std::endl;
 
 // N > ~100 is probably needed to see the helix
 
-void generateDummyLine(double*point, int n) {
-  cout << "Hello world!" << endl;
-  double spins = 3;
-  double radius = 1;
-  double z_per_radian = 0.3;
-  for (int i = 0; i < n; i++) {
-    double angle = 1.*i*spins/(n-1);
-    point[i*3  ] = cos(angle);
-    point[i*3+1] = sin(angle);
-    point[i*3+2] = z_per_radian*angle;
-  }
+void generateDummyLine_(double*point, int n) {
+	cout << "Hello world!" << endl;
+	double spins = 3;
+	double radius = 1;
+	double z_per_radian = 0.3;
+	for (int i = 0; i < n; i++) {
+		double angle = 1.*i*spins / (n - 1);
+		point[i * 3] = cos(angle);
+		point[i * 3 + 1] = sin(angle);
+		point[i * 3 + 2] = z_per_radian * angle;
+	}
+}
+
+extern "C" {
+	__declspec(dllexport) void generateDummyLine(double*point, int n) {
+		generateDummyLine_(point, n);
+	}
 }
