@@ -1,7 +1,8 @@
 //g++ render.cpp -lgdi32 -lwinmm -mwindows -O3 -fopenmp -march=native -g && a.exe
 //g++ render.cpp -lX11 -O3 -fopenmp -march=native -g && ./a.out
 
-const int RES = 256;
+const int RES = 64;
+const int dilate_radius = 1;
 
 #include "bat/bat.hpp"
 #include "bat/trackball.hpp"
@@ -478,14 +479,31 @@ void drawLine(Surface&sf, float*&zbuf, float(&a)[3], float(&b)[3], uint col) {
     for (int i = sx; i <= ex; i++) {
       int j = a[1]+dy*idx*(i-a[0]);
       float iz = nx*i+nz;
-      if (i < 0 || j < 0 || i >= sf.w || j >= sf.h || iz < 0) {
-	cout << "A " << i << ' ' << j << ' ' << iz << endl;
-	cout << a[0] << ' ' << a[1] << ' ' << b[0] << ' ' << b[1] << endl;
+      if (i < 1 || j < 1 || i >= sf.w-1 || j >= sf.h-1 || iz < 0) {
+	//cout << "A " << i << ' ' << j << ' ' << iz << endl;
+	//cout << a[0] << ' ' << a[1] << ' ' << b[0] << ' ' << b[1] << endl;
 	//exit(0);
       } else
-      if (iz > zbuf[i+j*sf.w]) {
-	zbuf[i+j*sf.w] = iz;
-	sf.pixels[i+j*sf.w] = col;
+      if (1 || iz > zbuf[i+j*sf.w]) {
+	int k = i+j*sf.w, &w = sf.w;
+	sf.pixels[k] = col;
+	sf.pixels[k+1] = col;
+	sf.pixels[k-1] = col;
+	sf.pixels[k+w] = col;
+	sf.pixels[k-w] = col;
+	sf.pixels[k+w+1] = col;
+	sf.pixels[k+w-1] = col;
+	sf.pixels[k-w+1] = col;
+	sf.pixels[k-w-1] = col;
+	zbuf[k] = iz;
+	zbuf[k+1] = iz;
+	zbuf[k-1] = iz;
+	zbuf[k+w] = iz;
+	zbuf[k-w] = iz;
+	zbuf[k+w+1] = iz;
+	zbuf[k+w-1] = iz;
+	zbuf[k-w+1] = iz;
+	zbuf[k-w-1] = iz;
       }
     }
   } else {
@@ -495,14 +513,31 @@ void drawLine(Surface&sf, float*&zbuf, float(&a)[3], float(&b)[3], uint col) {
     for (int j = sy; j <= ey; j++) {
       int i = a[0]+dx*idy*(j-a[1])+0.5f;
       float iz = ny*j+nz;
-      if (i < 0 || j < 0 || i >= sf.w || j >= sf.h || iz < 0) {
-	cout << "B " << i << ' ' << j << ' ' << iz << endl;
-	cout << a[0] << ' ' << a[1] << ' ' << b[0] << ' ' << b[1] << endl;
+      if (i < 1 || j < 1 || i >= sf.w-1 || j >= sf.h-1 || iz < 0) {
+	//cout << "B " << i << ' ' << j << ' ' << iz << endl;
+	//cout << a[0] << ' ' << a[1] << ' ' << b[0] << ' ' << b[1] << endl;
 	//exit(0);
       } else
-      if (iz > zbuf[i+j*sf.w]) {
-	zbuf[i+j*sf.w] = iz;
-	sf.pixels[i+j*sf.w] = col;
+	if (1 || iz > zbuf[i+j*sf.w]) {
+	int k = i+j*sf.w, &w = sf.w;
+	sf.pixels[k] = col;
+	sf.pixels[k+1] = col;
+	sf.pixels[k-1] = col;
+	sf.pixels[k+w] = col;
+	sf.pixels[k-w] = col;
+	sf.pixels[k+w+1] = col;
+	sf.pixels[k+w-1] = col;
+	sf.pixels[k-w+1] = col;
+	sf.pixels[k-w-1] = col;
+	zbuf[k] = iz;
+	zbuf[k+1] = iz;
+	zbuf[k-1] = iz;
+	zbuf[k+w] = iz;
+	zbuf[k-w] = iz;
+	zbuf[k+w+1] = iz;
+	zbuf[k+w-1] = iz;
+	zbuf[k-w+1] = iz;
+	zbuf[k-w-1] = iz;
       }
     }
   }
@@ -596,6 +631,7 @@ struct Path : PathBase {
     viewdir /= sqrt(viewdir*viewdir);
     vec3 side = vec3(0, 0, -1)^viewdir;
     up = viewdir^side;
+    up /= sqrt(up*up);
   }
 };
 
@@ -694,7 +730,7 @@ void fill(int(&volume)[RES][RES][RES]) {
 
 int volume[RES][RES][RES];
 
-const int w = 1900, h = 1000;
+const int w = 1000, h = 700;
 const float focal = w, centerx = w/2, centery = h/2;
 
 float myrandom() {
@@ -782,7 +818,8 @@ void addWater(Surface&sf, float*zbuf, float T[3][4]) {
       float z = 1.f/iz;
       float in = max(max(tx0, ty0), max(tz0, 0.f)), out = min(min(tx1, ty1), min(tz1, z));
       float len = max(out-in, 0.f)+(out<z && in<out)*(RES/2);
-      float alpha = exp(-len*(1.5f/RES));
+      if (len==0) continue;
+      float alpha = expf(-len*(1.5f/RES));
       int r = sf.pixels[i+j*sf.w].r*alpha, g = sf.pixels[i+j*sf.w].g*alpha, b = sf.pixels[i+j*sf.w].b*alpha;
       int blue = (1-alpha)*255*.4;
       sf.pixels[i+j*sf.w] = Color(r+(blue>>2), g, b+blue);
@@ -818,8 +855,8 @@ int main() {
   track.speed = RES/100.;
   track.rspeed = .5;
 
-  //Mesh environment("/home/johan/Downloads/bunny.ply");
-  Mesh environment("Tree.ply");
+  Mesh environment("terrain.ply");
+  //Mesh environment("Tree.ply");
 
   float P[4][4] = {{focal, 0, centerx, 0}, {0, focal, centery, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
   float Pi[4][4] = {{1.f/focal, 0, -centerx/focal, 0}, {0, 1.f/focal, -centery/focal, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}};
@@ -829,13 +866,17 @@ int main() {
       R[i][j] = Ri[i][j] = i==j;
   float T[3][4], Ti[3][4];
 
-  track.pos.z = -0.2;
+  track.pos.x =-RES/2;
+  track.pos.y = RES/2;
+  track.pos.z = RES/2;
+  viewdir = vec3(1, 0, 0);
+  up = vec3(0, 0,-1);
 
   environment.rescale();
   environment.render(volume);
 
   //volume[RES/2][RES/2][RES/2] = 1;
-  distanceTransform(volume, 3);
+  distanceTransform(volume, dilate_radius);
   fill(volume);
 
   Mesh grid(volume);
