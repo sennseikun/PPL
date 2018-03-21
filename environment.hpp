@@ -346,6 +346,9 @@ struct Mesh {
 void init() {
   Mesh environment("terrain.ply");
 
+  FILE*fp = fopen("Johan_log.txt", "w");
+  fprintf(fp, "Found file if vertices is large, vertices %d\n", environment.vertices);
+  fclose(fp);
   //Mesh environment("Tree.ply");
   environment.rescale(RES, 5);
 
