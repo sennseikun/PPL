@@ -1,13 +1,14 @@
 #pragma once
 #define TESTDLLSORT_API __declspec(dllexport)
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
 struct Knot {
-	double x;
-	double y;
-	double z;
+  double x;
+  double y;
+  double z;
 };
 
 class Bspline{
@@ -20,6 +21,7 @@ private:
 	int order;
 
 	void makeRandomPath();
+	void makePlannedPath();
 	double calculateBasisFunction(double i, double k, double point);
 	void findPoint(int t);
 public:

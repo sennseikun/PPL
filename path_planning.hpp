@@ -3,21 +3,28 @@
 
 using namespace std;
 
-struct pos {
+struct Jpos {
   int x, y, z;
-  pos() {}
-  pos(int x, int y, int z) : x(x), y(y), z(z) {}
+  Jpos() {}
+  Jpos(int x, int y, int z) : x(x), y(y), z(z) {}
 };
 
-struct Knot {
+struct JKnot {
   float p[3];
 };
 
 struct PathBase {
-  vector<Knot> knot;
+  vector<JKnot> knot;
 };
 
-void findPathBFS(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&r) {
+bool operator<(const Jpos&a, const Jpos&b) {
+  if (a.x < b.x) return 1;
+  if (a.y < b.y) return 1;
+  return a.z < b.z;
+}
+
+
+void findPathBFS(int(&volume)[RES][RES][RES], Jpos start, Jpos end, PathBase&r) {
   static int dist[RES][RES][RES];
   for (int i = 0; i < RES; i++)
     for (int j = 0; j < RES; j++)
@@ -38,9 +45,9 @@ void findPathBFS(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&r) {
 	dz[c] = k;
 	c++;
       }
-  queue<pos> q;
+  queue<Jpos> q;
   dist[end.z][end.y][end.x] = 0;
-  q.push(pos(end.z, end.y, end.x));
+  q.push(Jpos(end.z, end.y, end.x));
 
   int co = 0;
   while (q.size()) {
@@ -57,7 +64,7 @@ void findPathBFS(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&r) {
 
     for (int l = 0; l < 26; l++) {
       if (dist[i+dx[l]][j+dy[l]][k+dz[l]] > d) {
-	q.push(pos(i+dx[l], j+dy[l], k+dz[l]));
+	q.push(Jpos(i+dx[l], j+dy[l], k+dz[l]));
 	dist[i+dx[l]][j+dy[l]][k+dz[l]] = d;
       }
     }
@@ -67,19 +74,19 @@ void findPathBFS(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&r) {
     for (int j = 0; j < RES; j++)
     for (int k = 0; k < RES; k++)
     if (volume[i][j][k] == 0) {
-    Knot knot;
+    JKnot knot;
     knot.p[0] = k-0.5f, knot.p[1] = j-0.5f, knot.p[2] = i-0.5f;
     r.knot.push_back(knot);
     }
   */
-  pos p(start.z, start.y, start.x);
-  Knot knot;
+  Jpos p(start.z, start.y, start.x);
+  JKnot knot;
   for (int i = 0; i < 2; i++) {
     knot.p[0] = p.z-0.5f, knot.p[1] = p.y-0.5f, knot.p[2] = p.x-0.5f;
     r.knot.push_back(knot);
   }
   while (1) {
-    Knot knot;
+    JKnot knot;
     knot.p[0] = p.z-0.5f, knot.p[1] = p.y-0.5f, knot.p[2] = p.x-0.5f;
     r.knot.push_back(knot);
     int&i = p.x;
@@ -112,7 +119,7 @@ void findPathBFS(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&r) {
 
 
 
-void findPathDijkstra(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&r) {
+void findPathDijkstra(int(&volume)[RES][RES][RES], Jpos start, Jpos end, PathBase&r) {
   static float dist[RES][RES][RES];
   for (int i = 0; i < RES; i++)
     for (int j = 0; j < RES; j++)
@@ -134,9 +141,9 @@ void findPathDijkstra(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&
 	len[c] = sqrtf(i*i+j*j+k*k);
 	c++;
       }
-  priority_queue<pair<float, pos> > q;
+  priority_queue<pair<float, Jpos> > q;
   dist[end.z][end.y][end.x] = 0;
-  q.push(make_pair(0, pos(end.z, end.y, end.x)));
+  q.push(make_pair(0, Jpos(end.z, end.y, end.x)));
 
   int co = 0;
   while (q.size()) {
@@ -155,7 +162,7 @@ void findPathDijkstra(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&
     for (int l = 0; l < 26; l++) {
       float dd = d+len[l];
       if (dist[i+dx[l]][j+dy[l]][k+dz[l]] > dd) {
-	q.push(make_pair(-dd, pos(i+dx[l], j+dy[l], k+dz[l])));
+	q.push(make_pair(-dd, Jpos(i+dx[l], j+dy[l], k+dz[l])));
 	dist[i+dx[l]][j+dy[l]][k+dz[l]] = dd;
       }
     }
@@ -165,19 +172,19 @@ void findPathDijkstra(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&
     for (int j = 0; j < RES; j++)
     for (int k = 0; k < RES; k++)
     if (volume[i][j][k] == 0) {
-    Knot knot;
+    JKnot knot;
     knot.p[0] = k-0.5f, knot.p[1] = j-0.5f, knot.p[2] = i-0.5f;
     r.knot.push_back(knot);
     }
   */
-  pos p(start.z, start.y, start.x);
-  Knot knot;
+  Jpos p(start.z, start.y, start.x);
+  JKnot knot;
   for (int i = 0; i < 2; i++) {
     knot.p[0] = p.z-0.5f, knot.p[1] = p.y-0.5f, knot.p[2] = p.x-0.5f;
     r.knot.push_back(knot);
   }
   while (1) {
-    Knot knot;
+    JKnot knot;
     knot.p[0] = p.z-0.5f, knot.p[1] = p.y-0.5f, knot.p[2] = p.x-0.5f;
     r.knot.push_back(knot);
     int&i = p.x;
@@ -208,7 +215,7 @@ void findPathDijkstra(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&
   }
 }
 
-void findPathAstar(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&r) {
+void findPathAstar(int(&volume)[RES][RES][RES], Jpos start, Jpos end, PathBase&r) {
   static float dist[RES][RES][RES];
   for (int i = 0; i < RES; i++)
     for (int j = 0; j < RES; j++)
@@ -230,9 +237,9 @@ void findPathAstar(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&r) 
 	len[c] = sqrtf(i*i+j*j+k*k);
 	c++;
       }
-  priority_queue<pair<pair<float, float>, pos> > q;
+  priority_queue<pair<pair<float, float>, Jpos> > q;
   dist[end.z][end.y][end.x] = 0;
-  q.push(make_pair(make_pair(0,0), pos(end.z, end.y, end.x)));
+  q.push(make_pair(make_pair(0,0), Jpos(end.z, end.y, end.x)));
 
   int co = 0;
   while (q.size()) {
@@ -253,7 +260,7 @@ void findPathAstar(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&r) 
       if (dist[i+dx[l]][j+dy[l]][k+dz[l]] > dd) {
 	float x = start.z-i-dx[l], y = start.y-j-dy[l], z = start.x-k-dz[l];
 	float heuristic = sqrtf(x*x+y*y+z*z);
-	q.push(make_pair(make_pair(-(dd+heuristic), dd), pos(i+dx[l], j+dy[l], k+dz[l])));
+	q.push(make_pair(make_pair(-(dd+heuristic), dd), Jpos(i+dx[l], j+dy[l], k+dz[l])));
 	dist[i+dx[l]][j+dy[l]][k+dz[l]] = dd;
       }
     }
@@ -263,20 +270,20 @@ void findPathAstar(int(&volume)[RES][RES][RES], pos start, pos end, PathBase&r) 
     for (int j = 0; j < RES; j++)
     for (int k = 0; k < RES; k++)
     if (volume[i][j][k] == 0) {
-    Knot knot;
+    JKnot knot;
     knot.p[0] = k-0.5f, knot.p[1] = j-0.5f, knot.p[2] = i-0.5f;
     r.knot.push_back(knot);
     }
   */
 
-  pos p(start.z, start.y, start.x);
-  Knot knot;
+  Jpos p(start.z, start.y, start.x);
+  JKnot knot;
   for (int i = 0; i < 2; i++) {
     knot.p[0] = p.z-0.5f, knot.p[1] = p.y-0.5f, knot.p[2] = p.x-0.5f;
     r.knot.push_back(knot);
   }
   while (1) {
-    Knot knot;
+    JKnot knot;
     knot.p[0] = p.z-0.5f, knot.p[1] = p.y-0.5f, knot.p[2] = p.x-0.5f;
     r.knot.push_back(knot);
     int&i = p.x;

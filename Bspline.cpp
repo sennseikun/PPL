@@ -2,9 +2,11 @@
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+#include <string>
+
+#include "environment.hpp"
 
 using namespace std;
-
 
 int randomWithLimits(int lower, int upper) {
   return (rand() % (upper - lower + 1)) + lower;
@@ -18,8 +20,19 @@ Bspline::Bspline(int size, int resolution, int order){
   this->resolution = resolution;
   path.resize(size+2);
   interpolation.resize((size + 2)*resolution);
-  makeRandomPath();
+  //makeRandomPath();
+  makePlannedPath();
 }
+
+void Bspline::makePlannedPath() {
+  PathBase plan = generatePath(size);
+  for (int i = 0; i < size; i++) {
+    path[i].x = plan.knot[i].p[0];
+    path[i].y = plan.knot[i].p[1];
+    path[i].z = plan.knot[i].p[2];
+  }
+}
+
 void Bspline::makeRandomPath() {
   int length = size - 2;
   for (int i = 0; i < length; i++) {
@@ -82,6 +95,8 @@ void Bspline::saveInterpolationToFile(string filename) {
 
   outfile.close();
 }
+
+
 void Bspline::makeBspline() {
   for (int t = 0; t < size*resolution; t++) {
     findPoint(t);
