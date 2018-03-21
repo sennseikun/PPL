@@ -119,9 +119,9 @@ extern "C" {
     Bspline bspline(knots, resolution, order);
     bspline.makeBspline();
     vector<Knot> interpolation = bspline.getInterpolation();
-    int i = 0;
-    int maxSize = max(int(interpolation.size()), arraySize);
-    for (int i = 0; i < arraySize; i++) {
+
+    int maxSize = min(int(interpolation.size()), arraySize/3);
+    for (int i = 0; i < maxSize; i++) {
       interpolationArray[i*dimensions] = interpolation[i].x;
       interpolationArray[i*dimensions + 1] = interpolation[i].y;
       interpolationArray[i*dimensions + 2] = interpolation[i].z;
