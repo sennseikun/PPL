@@ -188,6 +188,9 @@ struct Mesh {
   }
 
   Mesh(const char*filename) {
+    vertices = 0;
+    triangles = 0;
+    vertex = NULL;
     FILE*fp = fopen(filename, "r");
     if (!fp) {
       cout << "Could not open file " << filename << endl;
@@ -332,14 +335,17 @@ struct Mesh {
 
   }
   ~Mesh() {
-    delete[]vertex;
-    delete[]triangle;
+    if (vertex) {
+      delete[]vertex;
+      delete[]triangle;
+    }
   }
 };
 
 
 void init() {
   Mesh environment("terrain.ply");
+
   //Mesh environment("Tree.ply");
   environment.rescale(RES, 5);
 
