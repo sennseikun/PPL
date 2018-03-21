@@ -39,8 +39,8 @@ ostream& operator<<(ostream& os, const vector<Knot>& rhs);
 Knot operator*(const Knot& lhs, double rhs);
 Knot& operator+=(Knot& lhs, const Knot& rhs);
 extern "C" {
-  //#ifndef LINUX
+#ifndef __linux
   TESTDLLSORT_API
-  //#endif
+#endif
 	void bsplineArray(int knots, int resolution, int order, double* interpolationArray, int arraySize);
 }

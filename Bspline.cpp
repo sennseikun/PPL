@@ -20,8 +20,8 @@ Bspline::Bspline(int size, int resolution, int order){
   this->resolution = resolution;
   path.resize(size+2);
   interpolation.resize((size + 2)*resolution);
-  makeRandomPath();
-  //makePlannedPath();
+  //makeRandomPath();
+  makePlannedPath();
 }
 
 void Bspline::makePlannedPath() {
@@ -129,9 +129,9 @@ void helperFunction(int knots, int resolution, int order, double* interpolationA
 }
 
 extern "C" {
-  //#ifndef LINUX
+#ifndef __linux
   __declspec(dllexport)
-  //#endif
+#endif
 
   void bsplineArray(int knots, int resolution, int order, double* interpolationArray, int arraySize) {
     int dimensions = 3;
