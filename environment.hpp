@@ -369,7 +369,7 @@ void init() {
   fill(volume);
 }
 
-Jpos getPos(int(&volume)[RES][RES][RES], int border = 3) {
+Jpos getPos(int(&volume)[RES][RES][RES], int border = 10) {
   Jpos p;
   do {
     p.x = rand()%(RES-border*2)+border;
@@ -420,9 +420,6 @@ PathBase generatePath(int len) {
     for (int j = 0; j < 3; j++) {
       path.knot[i].p[j] = (path.knot[i].p[j]-border)/(RES-border*2);
     }
-    /*path.knot[i].p[0] = 1.*i/path.knot.size();
-    path.knot[i].p[1] = 0.9;
-    path.knot[i].p[2] = 0.9;*/
   }
 
   return path;
