@@ -31,7 +31,7 @@ void rasterVolume(int volume[RES][RES][RES], float p[3][3]) {
     float ax = a[0]-c[0], ay = a[1]-c[1], az = a[2]-c[2];
     float bx = b[0]-c[0], by = b[1]-c[1], bz = b[2]-c[2];
     float nx = fabs(ay*bz-az*by), ny = fabs(az*bx-ax*bz), nz = fabs(ax*by-ay*bx);
-    if (nx > ny and nx > nz) {
+    if (nx > ny && nx > nz) {
       axis = 0;
       swap(p[0][0], p[0][2]);
       swap(p[1][0], p[1][2]);
@@ -74,10 +74,10 @@ void rasterVolume(int volume[RES][RES][RES], float p[3][3]) {
       int la = ax*i+ay*j < az;
       int lb = bx*i+by*j < bz;
       int lc = cx*i+cy*j < cz;
-      if (la == lb and la == lc) {
+      if (la == lb && la == lc) {
 	float z = nx*i+ny*j+nz;
 	int k0 = floor(z), k1 = ceil(z);
-	if (k0 >= 0 and k1 < RES) {
+	if (k0 >= 0 && k1 < RES) {
 	  if (axis == 0)
 	    volume[i][j][k0] = 1, volume[i][j][k1] = 1;
 	  else if (axis == 1)
@@ -211,7 +211,7 @@ struct Mesh {
 	vertexing = 0;
       } else if (strcmp(str, "end_header") == 0) {
 	break;
-      } else if (strcmp(str, "property") == 0 and vertexing) properties++;
+      } else if (strcmp(str, "property") == 0 && vertexing) properties++;
     }
     vertex = new float[vertices][3];
     triangle = new int[triangles][3];
