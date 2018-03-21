@@ -72,7 +72,7 @@ void Bspline::savePathToFile(string filename) {
   outfile.close();
 }
 void Bspline::saveInterpolationToFile(string filename) {
-  ofstream outfile(filename);
+  ofstream outfile(&filename[0]);
 
   if (!outfile) { // evt. if(inputFile.fail())
     cout << "Error opening file(s)\n";
