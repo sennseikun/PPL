@@ -201,7 +201,7 @@ void findPathDijkstra(int(&volume)[RES][RES][RES], Jpos start, Jpos end, PathBas
     int mindist = 1e9, minl = 0;
     for (int l = 0; l < 26; l++) {
       float dd = dist[i+dx[l]][j+dy[l]][k+dz[l]]+len[l];
-      if (dd != len[l]-1 && dd < mindist) {
+      if (dd != len[l]-1 && fabs(dd-d) < 1e-5) {
 	mindist = dd;
 	minl = l;
       }
@@ -300,7 +300,7 @@ void findPathAstar(int(&volume)[RES][RES][RES], Jpos start, Jpos end, PathBase&r
     int mindist = 1e9, minl = 0;
     for (int l = 0; l < 26; l++) {
       float dd = dist[i+dx[l]][j+dy[l]][k+dz[l]]+len[l];
-      if (dd != len[l]-1 && dd < mindist) {
+      if (dd != len[l]-1 && fabs(dd-d) < 1e-5) {
 	mindist = dd;
 	minl = l;
       }
