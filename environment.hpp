@@ -382,6 +382,8 @@ Jpos getPos(int(&volume)[RES][RES][RES], int border = 10) {
 int toggle_planner = 2; // K_5 for BFS, K_6 for Dijkstra, K_7 for A*
 
 PathBase generatePath(int len) {
+  srand(time(NULL));
+
   static int inited = 0;
   if (!inited++) init();
 
