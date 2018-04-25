@@ -545,6 +545,7 @@ int main() {
   up = vec3(0, 0,-1);
 
   Mesh environment("terrain.ply");
+  //Mesh environment("Tree.ply");
   environment.rescale(1);
 
   timeval ta, tb;

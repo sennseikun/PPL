@@ -354,8 +354,10 @@ void init() {
   }
 
   FILE*fp = fopen("Johan_log.txt", "w");
-  fprintf(fp, "%sFound file if vertices is large, vertices %d\n", s, environment.vertices);
-  fclose(fp);
+  if (fp) {
+    fprintf(fp, "%s Found file if vertices is large, vertices %d\n", s, environment.vertices);
+    fclose(fp);
+  }
 
   //Mesh environment("Tree.ply");
   environment.rescale(RES, 5);
